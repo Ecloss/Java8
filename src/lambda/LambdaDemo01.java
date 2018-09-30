@@ -1,5 +1,7 @@
 package lambda;
 
+import org.junit.experimental.theories.internal.SpecificDataPointsSupplier;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,9 +31,11 @@ public class LambdaDemo01 {
             return s2.compareTo(s1);
         });
 
-        // 更加简洁的写法
-        // 大括号里只有一句代码
-        // 编译器可以自动推导出参数类型
+        /**
+         * 更加简洁的写法
+         * 大括号里只有一句代码时，那么可以省略大括号
+         * 编译器可以自动推导出参数类型
+         */
         Collections.sort(list, (s1, s2) -> s2.compareTo(s1));
 
         System.out.println(list);
