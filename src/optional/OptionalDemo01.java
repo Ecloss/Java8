@@ -211,7 +211,7 @@ public class OptionalDemo01 {
         Function<String, Integer> function = s -> str.charAt(2) - str.charAt(0);
         System.out.println("map2 = " + op.map(function).get());
 
-        
+
 
     }
 
