@@ -48,7 +48,9 @@ public class FunctionDemo02 {
         Function<String, String> before = (s) -> "HiHi" + s;
         System.out.println("-------------------------------");
         Student stu3 = f2.compose( before).apply(name);
+        Student stu5 = f2.compose(s -> "HeHe" + s).apply(name);
         System.out.println(stu3.getName());
+        System.out.println(stu5.getName());
 
         // andThen 是在apply方法后作用的
         // andThen 的返回类型是Integer的话，apply的返回类型也会改变成Integer
@@ -60,9 +62,11 @@ public class FunctionDemo02 {
         // andThen例子2：
         Function<Student, String> after1 = stu -> stu.getName();
         String stu4 = f1.andThen(after1).apply(name);
+        String stu6 = f1.andThen(stu -> stu.getName() + "after two mintiue").apply(name);
         System.out.println("--------------------------------");
         System.out.println(stu4);
-
+        System.out.println("-------------------------------------");
+        System.out.println();
         // 创建一个空的函数式编程
         Function<String, Student> f3 = (s) -> new Student();
     }

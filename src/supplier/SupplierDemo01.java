@@ -1,9 +1,14 @@
 package supplier;
 
+import org.junit.Test;
+
 import java.util.Random;
 import java.util.function.Supplier;
 
 /**
+ * supplier是生产者模式：它不传入参数，但是会生产（返回）一个返回类型，
+ * 该返回类型和Supplier(U) 的U类型相同
+ *
  * @author 余修文
  * @date 2018/9/30 8:39
  */
@@ -22,10 +27,23 @@ public class SupplierDemo01 {
                 int num = random.nextInt(str.length());
                 stringBuffer.append(str.charAt(num));
             }
-            return  stringBuffer.toString();
+            return stringBuffer.toString();
         };
         // Supplier 的 get 方法返回String这一个结果集
         System.out.println(supplier.get());
+    }
+
+    /**
+     * 获得0-100以内的5个随机数字的和
+     */
+    @Test
+    public void demo01() {
+        Supplier<Integer> sumInt = () -> {
+            Random random = new Random();
+            Integer num = 0, maxn = 100;
+            return 0;
+        };
+        System.out.println(sumInt.get());
     }
 
 }
