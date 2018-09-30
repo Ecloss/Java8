@@ -1,15 +1,11 @@
 package optional;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.net.URLEncoder;
-
+import java.util.function.*;
 
 /**
+ * Optional：供应商的意思
  * Optional 不是接口而是一个类，这是个用来防止NullPointerException异常的辅助类型
  * Optional 被定义为一个简单的容器，其值可能是null或者不是null
  * 在Java8之前一般某个函数应该返回非空对象但是偶尔却可能返回了null，而在Java 8中，不推荐你返回null而是返回Optional
@@ -211,8 +207,33 @@ public class OptionalDemo01 {
         Function<String, Integer> function = s -> str.charAt(2) - str.charAt(0);
         System.out.println("map2 = " + op.map(function).get());
 
+        /**
+         * flatMap： 与map的用法相似，但是唯一不同的是，flatMap 的 mapper返回值必须是Optional
+         * 调用结束时，flatMap不会对结果进行封装，如果返回的不是Optional(U) 的类型，就强制类型转换
+         */
+        String  str1 = "abcde";
+        Optional<String> op4 = Optional.ofNullable(str1);
+        // flatMap 的用法
+        System.out.println("flatMap的返回结果：" +  op4.flatMap(s -> Optional.ofNullable(s + "_briup")).get());
+        // map 的用法
+        System.out.println("map的返回结果：" + op4.map(s -> s + "briup").get());
 
+        System.out.println("----------filter的用法----------------");
 
+        /**
+         * filter方法: 就相当于一个筛选条件，
+         * filter 调用 Predicate， 会传入一个test类型的值，
+         * 然后在返回同样的Optional(U) 的类型
+         *
+         */
+        Predicate<String> predicate = s -> s.length() > 10;
+        String str4 = "abcdefg";
+        Optional<String> op5 = Optional.ofNullable(str4);
+        Optional<String> op6 = op5.filter(predicate);
+        System.out.println(op6.orElse("str长度不超过10，所以跳到这边来了"));
+        // 用更加简洁的写法来做
+        Optional<String> op7 = op5.filter(s -> s.length() < 10);
+        System.out.println(op7.orElse("str长度大于10 ， 所以跳到这儿来了"));
     }
 
 }
