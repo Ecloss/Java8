@@ -1,9 +1,13 @@
 package optional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.net.URLEncoder;
+
 
 /**
  * Optional 不是接口而是一个类，这是个用来防止NullPointerException异常的辅助类型
@@ -19,6 +23,7 @@ public class OptionalDemo01 {
 
     /**
      * requireNonNull(T obj, Supplier<String> messageSupplier), 是否为空，可以自己定义一个Lambda类， Supplier<String>
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -28,7 +33,8 @@ public class OptionalDemo01 {
          * 需要注意的是，创建对象时传入的参数不能为Null
          * 如果传入的参数为null， 那么抛出异常NullPointerException
          */
-        Optional<String> op1 = Optional.of("Hello");
+        Optional<String> op1 = Optional.of("Hello123");
+        System.out.println(op1.get());
 
         /**
          * 传入一个为null的值
@@ -80,7 +86,7 @@ public class OptionalDemo01 {
          */
         // 1. 创建一个不为空的集合，一个为空的集合
         List<Integer> list1 = new ArrayList<Integer>();
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             list1.add(i);
         }
         List<Integer> list2 = new ArrayList<Integer>();
@@ -111,6 +117,101 @@ public class OptionalDemo01 {
         System.out.println(optional5.orElse(exceStr));
         // 返回结果：Str字符串为空，并且产生了异常
         System.out.println(optional6.orElse(exceStr));
+        System.out.println("--------------orElseGet()用法------------");
+
+        /**
+         * orElseGet() 方法, 与orElse 方法不同，如果为空，会返回一个supplier的函数式接口
+         * orElse返回的是与Optional同类型的值
+         * 而orElseGet()  方法返回的是一个Supplier, 但是Supplier()里的对象必须是参数的类本身，或是相应的子类
+         */
+        // 输入一个相应的字符串， 如果输入的为null， 那么随机生成一个8的字符串
+        Scanner in = new Scanner(System.in);
+        String str2 = "Hello World, Keep Coding";
+        String str3 = null;
+        //System.out.println("请输入字符串str4：");
+        // 输入一个字符串
+        //String str4 = in.nextLine();
+        // 1. 创建一个Optional对象
+        Optional opStr1 = Optional.ofNullable(str2);
+
+        // 2. 创建一个supplier对象
+        Supplier<String> supplier = () -> {
+
+            return "This is null";
+        };
+        // 3. 使用orElseGet方法
+        /**
+         * 输入：HelloWorld
+         * 返回：HelloWorld
+         */
+        System.out.println(opStr1.orElseGet(supplier));
+
+        // 创建一个为空的字符串
+        Optional opStr2 = Optional.ofNullable(str3);
+        // 调用orElseGet方法
+        // 返回结果：This is null
+        System.out.println(opStr2.orElseGet(supplier));
+
+        // 换一种更简洁的写法
+        System.out.println(opStr2.orElseGet(() -> "Hello Wo.....null null"));
+
+        System.out.println("----------orElseThrow方法------------");
+        /**
+         * orElseThrow用法：如果Optional不为空，返回Optional对象，如果为空就抛出异常
+         * 源码中，也是调用supplier对象
+         *
+         */
+        String str5 = null;
+        String str6 = "More Null";
+        // 1. 创建一个String类型的Optional对象
+        Optional<String> optStr4 = Optional.ofNullable(str5);
+        Optional<String> opStr3 = Optional.ofNullable(str6);
+        try {
+            // 测试参数为str6的Optional
+            // 返回结果：More null
+            System.out.println(opStr3.orElseThrow(Exception::new));
+            // 测试参数为str5 的对象
+            //System.out.println(optStr4.orElseThrow(() -> new NullPointerException()));
+        } catch (Exception e) {
+            if (str5.isEmpty()) {
+                System.out.println("str5 为空");
+            }
+            e.printStackTrace();
+        }
+
+        System.out.println("------------------map用法-------------------");
+        /**
+         * T 是传入参数， U是返回类型
+            public<U> Optional<U> map(Function<? super T, ? extends U> mapper) {
+         *      判断mapper是否为空
+         *      Objects.requireNonNull(mapper);
+         *      判断本类是否不存在，如果不存在，返回empty
+         *       if (!isPresent())
+         *           return empty();
+         *       else {
+         *       返回 的类型与U的类型一直，value为T的参数
+         *           return Optional.ofNullable(mapper.apply(value));
+         *       }
+         *   }
+         */
+        /**
+         * map方法，如果有值，则执行Function的mapper函数，得到返回值与Optional一致
+         */
+        String str = "abcde";
+        Optional op = Optional.ofNullable(str);
+        // 如果用这种写法的话，s就是一个object类型
+        Optional<Integer> map = op.map(s -> 1);
+        System.out.println("map = " + map.get());
+        // 写的稍微复杂一些
+        Optional<Integer> map1 = op.map(
+                s -> str.charAt(4) - str.charAt(0)
+        );
+        System.out.println("map1 = " + map1.get());
+        // 先创建一个Function
+        Function<String, Integer> function = s -> str.charAt(2) - str.charAt(0);
+        System.out.println("map2 = " + op.map(function).get());
+
+        
 
     }
 
