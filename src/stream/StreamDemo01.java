@@ -68,9 +68,30 @@ public class StreamDemo01 {
 
         /**
          * 注意：一个Stream只可以被抛出一次，而上面的代码为了简洁重复了多次
-             * 上面的代码直接运行会抛出异常：java.lang.IllegalStateException   违反规定异常
+         * 上面的代码直接运行会抛出异常：java.lang.IllegalStateException   违反规定异常
          */
 
+        /**
+         * Stream操作：当把数据接口包装成stream后，就可以对stream进行各种操作了
+         *
+         * Intermediate: 中间操作
+         * map(mapToInt, faltMap), filter, distinct(去除重复列), sorted(排序), peek, limit, skip, parallel, sequential, unordered
+         * Short-circuiting:  短路操作
+         * anyMatch, allMatch, noneMatch, findFirst, findAny, limit
+         *
+         */
+
+        // map, flatMap映射：把stream的元素映射成另一个元素。
+        /**
+         * 1. 将字符串数组中所有的字符 转成大写
+         */
+        String[] str2 = new String[]{"abc", "hello", "keep", "Time"};
+        Stream<String> stream2 = Stream.of(str2);
+        // map是映射操作，collect是对这些数据进行收集，并且返回相应的集合
+        List<String> list3 = stream2.
+                map(String::toUpperCase).
+                collect(Collectors.toList());
+        System.out.println(list3.toString());
     }
 
 }
