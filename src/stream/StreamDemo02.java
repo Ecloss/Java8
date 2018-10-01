@@ -1,9 +1,8 @@
 package stream;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -49,7 +48,7 @@ public class StreamDemo02 {
         Integer[] init = new Integer[]{1, 2, 3, 4, 5};
         List<Integer> list = Arrays.asList(init);
         list.stream().
-                map(i -> i*i).
+                map(i -> i * i).
                 forEach(i -> System.out.println(i));
 
         System.out.println("--------------flatMap的用法----------------");
@@ -111,7 +110,7 @@ public class StreamDemo02 {
          * 筛选后进行排序能够大大的缩短执行时间
          */
         System.out.println("---------sorted排序----------------");
-        List<String> list6 = Arrays.asList("test","hello","world","java","tom","C","javascript");
+        List<String> list6 = Arrays.asList("test", "hello", "world", "java", "tom", "C", "javascript");
         // 1. 按照默认进行排序
         // 默认排序是按照首字母大小从小往大排序
         Stream<String> stream7 = list6.stream().sorted();
@@ -149,6 +148,101 @@ public class StreamDemo02 {
         System.out.println("----------count------------");
         long count = list6.stream().filter(s -> s.length() > 3).count();
         System.out.println(count);
+
+        /**
+         * 规约合并reduce
+         * 这是一个最终操作，允许通过制定的函数来将stream中的多个元素规约合并成一个元素
+         * 它提供了一个起始值，然后按照运算规则，和前面的Stream的第一个，第二个，第n个元素组合
+         * 常用的方法有average，sum，min，max，and，count，返回单个的结果值
+         * 并且reduce操作每处理一个元素总是创建一个新值
+         */
+        System.out.println("-----------------reduce----------------");
+        // 比如stream的sum就相当于
+        // [1, 10)
+        IntStream intStream = IntStream.range(1, 10);
+        IntStream intStream1 = IntStream.range(1, 10);
+        // 转换成，
+        Integer sum1 = intStream.reduce(5, (a, b) -> (a + b));
+        // 或者
+        Integer sum2 = intStream1.reduce(1, Integer::sum);
+        // 起始值：start + a + b
+        System.out.println("返回结果为起始值为5sum1 = " + sum1 + "；或者起始值1sum2 = " + sum2);
+
+        // 也有没有起始值的情况，这时候会把stream的前面两个元素组合起来，返回的是optional， 比如min， max
+        IntStream intStream2 = IntStream.range(1, 10);
+        OptionalInt optionalInt = intStream2.reduce((a, b) -> a < b ? a : b);
+        // max
+        IntStream intStream3 = IntStream.range(1, 10);
+        OptionalInt optionalInt1 = intStream3.reduce((a, b) -> a > b ? a : b);
+
+        // 对于reduce来说，有起始值会返回相应的对应类型，如果没有起始值，会返回一个Optional<U> 的类型
+        // 比如：contact字符串连接
+        String str = Stream.of("a", "b", "c", "d").reduce("", String::concat);
+        System.out.println(str);
+        Optional<String> optionalS = Stream.of("a", "b", "c", "d").reduce(String::concat);
+
+        // 写一个reduce的模板
+        Optional<String> optionalS1 = list6.stream().
+                sorted((s1, s2) -> s1.length() - s2.length()).
+                filter(s -> s.startsWith("t")).
+                map(s -> s + "perper").
+                reduce((s1, s2) -> s1 + " | " + s2);
+        /**
+         * 1. 先创建一个steam流对象
+         * 2. 然后将流对象中筛选出首字母为 t 的
+         * 3. 将筛选出来的stream，每个数据在字母最后加上 + "perper"
+         * 4. 将所有的数据，用 | 规约合并起来
+         */
+        System.out.println(optionalS1.get());
+
+        /**
+         * limit, skip
+         * limit：得到前n个元素
+         * skip：跳过前n个元素
+         */
+        List<String> list7 = Arrays.asList("test","javap","hello","world","java","tom","C","javascript");
+        // limit 选择前五个元素    "test","javap","hello","world","java"
+        Stream<String> stream8 = list7.stream().limit(5);
+        // skip 跳过前五个元素     "tom","C","javascript"
+        Stream<String> stream9 = list7.stream().skip(5);
+
+        /**
+         * Collector 收集元素, 辅助进行各类有用的操作
+         * 例如把stream转变为Collection， 或者把Stream 元素进行分组
+         */
+        List<String> list8 = Arrays.asList("test","hello","world","java","tom","C","javascript");
+        List<String> result = list8.stream().filter(s -> s.startsWith("t")).collect(Collectors.toList());
+
+        System.out.println("------按照字符串长度进行分组------------");
+        // 按照字符串的长度进行分组
+        Map<Integer, List<String>> collect = list8.stream().collect(Collectors.groupingBy(s -> s.length()));
+        System.out.println(collect.toString());
+
+        /**
+         * 并行和串行stream
+         */
+        // 生成100万个不同的字符串放到集合中去
+        int max = 1000000;
+        List<String> values = new ArrayList<String>(max);
+        for (int i = 0; i < max; i++) {
+            UUID uuid = UUID.randomUUID();
+            values.add(uuid.toString());
+        }
+
+        System.out.println("-----查看并行时间------------");
+        // 1纳秒 * 10^9 = 1秒
+        long t0 = System.nanoTime();
+        // 串行stream     串行时间：832311645
+        //long count1 = values.stream().sorted().count();
+        // 并行stream     并行时间：474983692      时间减少了近2倍
+        long count2 = values.parallelStream().sorted().count();
+
+        // 结束时间：t1
+        long t1 = System.nanoTime();
+
+        long time = t1 - t0;
+        System.out.println(count2);
+        System.out.println(time);
 
     }
 
