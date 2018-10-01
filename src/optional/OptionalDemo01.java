@@ -4,13 +4,32 @@ import java.util.*;
 import java.util.Optional;
 import java.util.function.*;
 
+import java.util.*;
+import java.util.Optional;
+import java.util.function.*;
+import java.util.*;
+import java.util.Optional;
+import java.util.function.*;
+
+import java.util.*;
+import java.util.Optional;
+import java.util.function.*;
+
+import java.util.*;
+import java.util.Optional;
+import java.util.function.*;
+
 /**
  * Optional：供应商的意思
- * Optional 不是接口而是一个类，这是个用来防止NullPointerException异常的辅助类型
+ * Optional 不是接口而是一个静态内部类，这是个用来防止NullPointerException异常的辅助类型
  * Optional 被定义为一个简单的容器，其值可能是null或者不是null
  * 在Java8之前一般某个函数应该返回非空对象但是偶尔却可能返回了null，而在Java 8中，不推荐你返回null而是返回Optional
  * 这是一个可以为null的容器对象
  * 如果值存在则isPresent()方法会返回true，调用get()方法会返回该对象
+ * 所谓的函数式接口：要注意三点
+ * 1. 带入的参数
+ * 2. 返回的类型
+ * 3. 函数式接口需要做的操作
  *
  * @author 余修文
  * @date 2018/9/30 9:58
@@ -31,6 +50,8 @@ public class OptionalDemo01 {
          */
         Optional<String> op1 = Optional.of("Hello123");
         System.out.println(op1.get());
+        Optional<String> op8 = Optional.ofNullable(null);
+        //Optional<String> op9 = Optional.of(null);
 
         /**
          * 传入一个为null的值
@@ -91,7 +112,7 @@ public class OptionalDemo01 {
         // 3. 创建一个Optional对象
         Optional<List<Integer>> opList03 = Optional.ofNullable(list1);
         opList03.ifPresent(conList1);
-        System.out.println("--------测试完带参数的后--------------");
+        System.out.println("----------测试完带参数的后--------------");
         Optional<List<Integer>> opList04 = Optional.ofNullable(list2);
         opList04.ifPresent(conList1);
 
@@ -155,13 +176,13 @@ public class OptionalDemo01 {
         /**
          * orElseThrow用法：如果Optional不为空，返回Optional对象，如果为空就抛出异常
          * 源码中，也是调用supplier对象
-         *
          */
         String str5 = null;
         String str6 = "More Null";
         // 1. 创建一个String类型的Optional对象
         Optional<String> optStr4 = Optional.ofNullable(str5);
         Optional<String> opStr3 = Optional.ofNullable(str6);
+        //System.out.println(optStr4.orElseThrow(() -> {return new NullPointerException();}));
         try {
             // 测试参数为str6的Optional
             // 返回结果：More null
@@ -192,17 +213,30 @@ public class OptionalDemo01 {
          */
         /**
          * map方法，如果有值，则执行Function的mapper函数，得到返回值与Optional一致
+         * map方法本身就是对原来的Optional进行操作筛选，并且返回同样的Optional对象
          */
         String str = "abcde";
-        Optional op = Optional.ofNullable(str);
+        Optional<String> op = Optional.ofNullable(str);
         // 如果用这种写法的话，s就是一个object类型
         Optional<Integer> map = op.map(s -> 1);
         System.out.println("map = " + map.get());
         // 写的稍微复杂一些
+        System.out.println("---------Function------------------");
+        Function<String, Integer> f1 = s -> s.charAt(4) - s.charAt(0);
+        System.out.println(f1.apply("abcde").toString());
         Optional<Integer> map1 = op.map(
                 s -> str.charAt(4) - str.charAt(0)
         );
+        /**
+         * 这种嵌套写法，会导致s -> 的s是Object类型，因此要进行强转换才行
+         */
+        Optional<Integer> map3 = op.map(s -> {
+            String st1 = (String)s;
+            return st1.charAt(4) - st1.charAt(0);
+        });
+        System.out.println("001 -- map3 = " + map3.get());
         System.out.println("map1 = " + map1.get());
+        System.out.println("002 -- map4 = " + op.map(s -> s + "today is 10/01").get());
         // 先创建一个Function
         Function<String, Integer> function = s -> str.charAt(2) - str.charAt(0);
         System.out.println("map2 = " + op.map(function).get());
@@ -217,6 +251,7 @@ public class OptionalDemo01 {
         System.out.println("flatMap的返回结果：" +  op4.flatMap(s -> Optional.ofNullable(s + "_briup")).get());
         // map 的用法
         System.out.println("map的返回结果：" + op4.map(s -> s + "briup").get());
+        System.out.println("map是否是String字符串："+ op4.map(s -> s + "map op4"));
 
         System.out.println("----------filter的用法----------------");
 
@@ -234,6 +269,29 @@ public class OptionalDemo01 {
         // 用更加简洁的写法来做
         Optional<String> op7 = op5.filter(s -> s.length() < 10);
         System.out.println(op7.orElse("str长度大于10 ， 所以跳到这儿来了"));
+
+        /**
+         * Stream流对象
+         */
+        
     }
 
+}
+
+/**
+ * 以单例模式创建一个Optional对象
+ */
+class OptionalSingleton{
+    private static Optional<Integer> optional = Optional.ofNullable(null);
+
+    public OptionalSingleton() {
+
+    }
+
+    private static Optional<Integer> getInstance() {
+        if (optional == null) {
+            optional = Optional.ofNullable(0);
+        }
+        return  optional;
+    }
 }
