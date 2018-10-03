@@ -24,8 +24,7 @@ public interface BinaryOperator<T> extends BiFunction<T,T,T>\
 | 3 |  supplier |
 | 4 |  consumer |
 | 5 |  optional |
-| 6 |   |
-| 7 |   |
+| 6 |  stream |
 
 > 面向接口编程最大的一个特点是，你要清楚函数接口中要传入什么参数\
 返回什么参数。以及这个函数的作用，就会弄明白很多东西
